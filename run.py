@@ -1,12 +1,14 @@
 from bauhaus import Encoding, proposition, constraint
 from bauhaus.utils import count_solutions, likelihood
-
+import people
+import movies
 import pprint
 
 # Encoding that will store all of your constraints
 E = Encoding()
 
 
+# PROPOSITIONS
 # For a complete module reference, see https://bauhaus.readthedocs.io/en/latest/bauhaus.html
 # Proposition to determine age bracket
 @constraint.at_least_one(E)
@@ -16,7 +18,7 @@ class PersonAgePropositions:
         self.ageBracket = ageBracket
 
     def __repr__(self):
-        return f"PersonAgeBracket.{self.ageBracket}"
+        return f"PersonAgeBracket: {self.ageBracket}"
 
 
 L13 = PersonAgePropositions("Less than 13")
@@ -32,7 +34,7 @@ class PersonPreferencePropositions:
         self.favGenre = favGenre
 
     def __repr__(self):
-        return f"PersonPreference.{self.favGenre}"
+        return f"PersonPreference: {self.favGenre}"
 
 
 likesAction = PersonPreferencePropositions("Likes Action")
@@ -50,7 +52,7 @@ class PersonAvailabilityPropositions:
         self.personTime = personTime
 
     def __repr__(self):
-        return f"PersonAvailability.{self.personTime}"
+        return f"PersonAvailability: {self.personTime}"
 
 
 L1h = PersonAvailabilityPropositions("Less than 1 hour")
@@ -67,7 +69,7 @@ class MovieAgePropositions:
         self.rating = rating
 
     def __repr__(self):
-        return f"MovieRating.{self.rating}"
+        return f"MovieRating: {self.rating}"
 
 
 Rated_G = MovieAgePropositions("Rated G")
@@ -83,7 +85,7 @@ class MovieGenreProposition:
         self.genre = genre
 
     def __repr__(self):
-        return f"MovieGenre.{self.genre}"
+        return f"MovieGenre: {self.genre}"
 
 
 isAction = MovieGenreProposition("Action")
@@ -101,11 +103,12 @@ class MovieLengthProposition:
         self.length = length
 
     def __repr__(self):
-        return f"MovieLength.{self.length}"
+        return f"MovieLength: {self.length}"
 
 
-MA1h = MovieLengthProposition("Movie is at least 1 hour long")
-MA2h = MovieLengthProposition("Movie is at least 2 hours long")
+ML1h = MovieLengthProposition("Less than 1 hour long")
+MA1h = MovieLengthProposition("At least 1 hour long")
+MA2h = MovieLengthProposition("At least 2 hours long")
 
 
 # Proposition to determine if the movie is age appropriate
@@ -115,7 +118,7 @@ class AgeAppropriateProposition:
         self.isAppropriate = isAppropriate
 
     def __repr__(self):
-        return f"Appropriate.{self.isAppropriate}"
+        return f"Appropriate: {self.isAppropriate}"
 
 
 AgeAppropriate = AgeAppropriateProposition("Age Appropriate")
@@ -125,10 +128,10 @@ AgeAppropriate = AgeAppropriateProposition("Age Appropriate")
 @proposition(E)
 class LikeableProposition:
     def __init__(self, isLikeable):
-        self.isAppropriate = isLikeable
+        self.isLikable = isLikeable
 
     def __repr__(self):
-        return f"Appropriate.{self.isLikeable}"
+        return f"Likable: {self.isLikeable}"
 
 
 likeable = LikeableProposition("Likeable")
@@ -141,70 +144,73 @@ class EnoughTimeProposition:
         self.enoughTime = enoughTime
 
     def __repr__(self):
-        return f"EnoughTime.{self.enoughTime}"
+        return f"EnoughTime: {self.enoughTime}"
 
 
 enoughTime = EnoughTimeProposition("Enough Time to Watch")
 
+# CONSTRAINTS
+# Determining age range
+E.add_constraint(L13 >> L17)
+E.add_constraint(A17 >> A13)
+# Not Appropriate
+E.add_constraint(L13 & Rated_R >> ~AgeAppropriate)
+E.add_constraint(L13 & Rated_PG13 >> ~AgeAppropriate)
+E.add_constraint(L17 & Rated_R >> ~AgeAppropriate)
+# Appropriate
+# G
+E.add_constraint(L13 & Rated_G >> AgeAppropriate)
+E.add_constraint(A13 & Rated_G >> AgeAppropriate)
+# PG13
+E.add_constraint(A13 & Rated_PG13 >> AgeAppropriate)
+# R
+E.add_constraint(A17 & Rated_R >> AgeAppropriate)
+
+# Determining Appropriate Genre
+# Determining Genre
+E.add_constraint(isAction >> ~(isHorror | isRomance | isComedy | isDocumentary))
+E.add_constraint(isHorror >> ~(isAction | isRomance | isComedy | isDocumentary))
+E.add_constraint(isRomance >> ~(isHorror | isAction | isComedy | isDocumentary))
+E.add_constraint(isComedy >> ~(isHorror | isRomance | isAction | isDocumentary))
+E.add_constraint(isDocumentary >> ~(isHorror | isRomance | isComedy | isAction))
+# Determining Likes
+E.add_constraint(likesDocumentary >> ~(likesHorror | likesRomance | likesComedy | likesAction))
+E.add_constraint(likesHorror >> ~(likesDocumentary | likesRomance | likesComedy | likesAction))
+E.add_constraint(likesRomance >> ~(likesDocumentary | likesHorror | likesComedy | likesAction))
+E.add_constraint(likesComedy >> ~(likesDocumentary | likesRomance | likesHorror | likesAction))
+E.add_constraint(likesAction >> ~(likesDocumentary | likesRomance | likesComedy | likesHorror))
+# Determining likeable genre
+E.add_constraint(likesAction & isAction >> likeable)
+E.add_constraint(likesHorror & isHorror >> likeable)
+E.add_constraint(likesRomance & isRomance >> likeable)
+E.add_constraint(likesComedy & isComedy >> likeable)
+E.add_constraint(likesDocumentary & isDocumentary >> likeable)
+
+# Determining time
+E.add_constraint(L1h >> L2h)
+E.add_constraint(A2h >> A1h)
+E.add_constraint(MA2h >> MA1h)
+E.add_constraint(MA1h >> ML1h)
+E.add_constraint(L1h & MA2h >> ~enoughTime)
+E.add_constraint(L1h & MA1h >> ~enoughTime)
+E.add_constraint(L2h & MA2h >> ~enoughTime)
+E.add_constraint(L1h & ML1h >> enoughTime)
+E.add_constraint(A1h & MA1h >> enoughTime)
+E.add_constraint(A2h & MA2h >> enoughTime)
+E.add_constraint(A2h & MA1h >> enoughTime)
+
 
 def example_theory():
-    # Determining age range
-    E.add_constraint(L13 >> L17)
-    E.add_constraint(A17 >> A13)
-    # Not Appropriate
-    E.add_constraint(L13 & Rated_R >> ~AgeAppropriate)
-    E.add_constraint(L13 & Rated_PG13 >> ~AgeAppropriate)
-    E.add_constraint(L17 & Rated_R >> ~AgeAppropriate)
-    # Appropriate
-    # G
-    E.add_constraint(L13 & Rated_G >> AgeAppropriate)
-    E.add_constraint(A13 & Rated_G >> AgeAppropriate)
-    # PG13
-    E.add_constraint(A13 & Rated_PG13 >> AgeAppropriate)
-    # R
-    E.add_constraint(A17 & Rated_R >> AgeAppropriate)
-
-    # Determining Appropriate Genre
-    # Determining Genre
-    E.add_constraint(isAction >> ~(isHorror | isRomance | isComedy | isDocumentary))
-    E.add_constraint(isHorror >> ~(isAction | isRomance | isComedy | isDocumentary))
-    E.add_constraint(isRomance >> ~(isHorror | isAction | isComedy | isDocumentary))
-    E.add_constraint(isComedy >> ~(isHorror | isRomance | isAction | isDocumentary))
-    E.add_constraint(isDocumentary >> ~(isHorror | isRomance | isComedy | isAction))
-    # Determining Likes
-    E.add_constraint(likesDocumentary >> ~(likesHorror | likesRomance | likesComedy | likesAction))
-    E.add_constraint(likesHorror >> ~(likesDocumentary | likesRomance | likesComedy | likesAction))
-    E.add_constraint(likesRomance >> ~(likesDocumentary | likesHorror | likesComedy | likesAction))
-    E.add_constraint(likesComedy >> ~(likesDocumentary | likesRomance | likesHorror | likesAction))
-    E.add_constraint(likesAction >> ~(likesDocumentary | likesRomance | likesComedy | likesHorror))
-    # Determining likeable genre
-    E.add_constraint(likesAction & isAction >> likeable)
-    E.add_constraint(likesHorror & isHorror >> likeable)
-    E.add_constraint(likesRomance & isRomance >> likeable)
-    E.add_constraint(likesComedy & isComedy >> likeable)
-    E.add_constraint(likesDocumentary & isDocumentary >> likeable)
-
-    # Determining time
-    E.add_constraint(L1h >> L2h)
-    E.add_constraint(A2h >> A1h)
-    E.add_constraint(L1h & MA2h >> ~enoughTime)
-    E.add_constraint(L1h & MA1h >> ~enoughTime)
-    E.add_constraint(L2h & MA2h >> ~enoughTime)
-    E.add_constraint(A1h & MA1h >> enoughTime)
-    E.add_constraint(A2h & MA2h >> enoughTime)
-    E.add_constraint(A2h & MA1h >> enoughTime)
-
-    return E
+    T = E.compile()
+    return T
 
 
 if __name__ == "__main__":
-
     T = example_theory()
-    # Don't compile until you're finished adding all your constraints!
-    T = T.compile()
-    # After compilation (and only after), you can check some of the properties
-    # of your model:
+
     print("\nSatisfiable: %s" % T.satisfiable())
     print("# Solutions: %d" % count_solutions(T))
-    print("   Solution: %s" % T.solve())
     print()
+    # print("   Solution: %s" % T.solve())
+
+    sol = T.solve()
