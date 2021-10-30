@@ -1,0 +1,236 @@
+﻿CONJECTUREPANEL Practice
+PROOF "A, B ⊢ A→B"
+INFER A,
+     B 
+     ⊢ A→B 
+FORMULAE
+0 B,
+1 A 
+IS
+SEQ ("→ intro"[A,B\1,0]) (hyp[A\0])
+END
+CONJECTUREPANEL Practice
+PROOF "A∧B∧C, A∧B∧C→D ⊢ D"
+INFER A∧B∧C,
+     A∧B∧C→D 
+     ⊢ D 
+FORMULAE
+0 D,
+1 A∧B∧C,
+2 A∧B∧C→D 
+IS
+SEQ (cut[B,C\0,0]) ("→ elim"[A,B\1,0]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
+CONJECTUREPANEL Practice
+PROOF "A, B, C ⊢ A∧B→C"
+INFER A,
+     B,
+     C 
+     ⊢ A∧B→C 
+FORMULAE
+0 C,
+1 A∧B,
+2 B,
+3 A 
+IS
+SEQ ("→ intro"[A,B\1,0]) (hyp[A\0])
+END
+CONJECTUREPANEL Practice
+PROOF "A, B, C, D ⊢ A∧B∧C→D"
+INFER A,
+     B,
+     C,
+     D 
+     ⊢ A∧B∧C→D 
+FORMULAE
+0 D,
+1 A∧B∧C,
+2 B,
+3 C,
+4 A 
+IS
+SEQ ("→ intro"[A,B\1,0]) (hyp[A\0])
+END
+CONJECTUREPANEL Practice
+PROOF "A, B, A∧B→¬C ⊢ ¬C"
+INFER A,
+     B,
+     A∧B→¬C 
+     ⊢ ¬C 
+FORMULAE
+0 ¬C,
+1 A∧B,
+2 A∧B→¬C,
+3 B,
+4 A 
+IS
+SEQ (cut[B,C\1,0]) ("∧ intro"[A,B\4,3]) (hyp[A\4]) (hyp[A\3]) (cut[B,C\0,0]) ("→ elim"[A,B\1,0]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
+CONJECTUREPANEL Theorems
+PROOF "¬¬P ⊢ P"
+INFER ¬¬P 
+     ⊢ P 
+FORMULAE
+0 ⊥,
+1 ¬¬P,
+2 ¬P,
+3 P 
+IS
+SEQ ("contra (classical)"[A\3]) (cut[B,C\0,0]) ("¬ elim"[B\2]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
+CONJECTUREPANEL Theorems
+PROOF "P→Q ⊢ ¬Q→¬P"
+INFER P→Q 
+     ⊢ ¬Q→¬P 
+FORMULAE
+0 ⊥,
+1 ¬Q,
+2 Q,
+3 P,
+4 P→Q,
+5 ¬P 
+IS
+SEQ ("→ intro"[A,B\1,5]) ("¬ intro"[A\3]) (cut[B,C\2,0]) ("→ elim"[A,B\3,2]) (hyp[A\4]) (hyp[A\3]) (cut[B,C\0,0]) ("¬ elim"[B\2]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
+CONJECTUREPANEL Practice
+PROOF "A, B, ¬C ⊢ A∧B→¬C"
+INFER A,
+     B,
+     ¬C 
+     ⊢ A∧B→¬C 
+FORMULAE
+0 ¬C,
+1 A∧B,
+2 B,
+3 A 
+IS
+SEQ ("→ intro"[A,B\1,0]) (hyp[A\0])
+END
+CONJECTUREPANEL Practice
+PROOF "A, B, A∧B, A∧B→C ⊢ C"
+INFER A,
+     B,
+     A∧B,
+     A∧B→C 
+     ⊢ C 
+FORMULAE
+0 C,
+1 A∧B,
+2 A∧B→C,
+3 B,
+4 A 
+IS
+SEQ (cut[B,C\1,0]) ("∧ intro"[A,B\4,3]) (hyp[A\4]) (hyp[A\3]) (cut[B,C\0,0]) ("→ elim"[A,B\1,0]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
+CONJECTUREPANEL Practice
+PROOF "A∧B, A∧B→¬C ⊢ ¬C"
+INFER A∧B,
+     A∧B→¬C 
+     ⊢ ¬C 
+FORMULAE
+0 ¬C,
+1 A∧B,
+2 A∧B→¬C 
+IS
+SEQ (cut[B,C\0,0]) ("→ elim"[A,B\1,0]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
+CONJECTUREPANEL Practice
+PROOF "A, B, C, A∧B∧C, A∧B∧C→D ⊢ D"
+INFER A,
+     B,
+     C,
+     A∧B∧C,
+     A∧B∧C→D 
+     ⊢ D 
+FORMULAE
+0 D,
+1 A∧B∧C,
+2 A∧B∧C→D,
+3 C,
+4 A∧B,
+5 B,
+6 A 
+IS
+SEQ (cut[B,C\4,0]) ("∧ intro"[A,B\6,5]) (hyp[A\6]) (hyp[A\5]) (cut[B,C\1,0]) ("∧ intro"[A,B\4,3]) (hyp[A\4]) (hyp[A\3]) (cut[B,C\0,0]) ("→ elim"[A,B\1,0]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
+CONJECTUREPANEL Theorems
+PROOF "P→Q, ¬Q ⊢ ¬P"
+INFER P→Q,
+     ¬Q 
+     ⊢ ¬P 
+FORMULAE
+0 ⊥,
+1 ¬Q,
+2 Q,
+3 P,
+4 P→Q 
+IS
+SEQ ("¬ intro"[A\3]) (cut[B,C\2,0]) ("→ elim"[A,B\3,2]) (hyp[A\4]) (hyp[A\3]) (cut[B,C\0,0]) ("¬ elim"[B\2]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
+CONJECTUREPANEL Practice
+PROOF "A, A→B ⊢ B"
+INFER A,
+     A→B 
+     ⊢ B 
+FORMULAE
+0 B,
+1 A,
+2 A→B 
+IS
+SEQ (cut[B,C\0,0]) ("→ elim"[A,B\1,0]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
+CONJECTUREPANEL Theorems
+PROOF "P∨¬P"
+INFER P∨¬P 
+FORMULAE
+0 ⊥,
+1 ¬(P∨¬P),
+2 P∨¬P,
+3 P,
+4 ¬P,
+5 ¬(P∨¬P)
+IS
+SEQ ("contra (classical)"[A\2]) (cut[B,C\3,0]) ("contra (classical)"[A\3]) (cut[B,C\2,0]) (LAYOUT "∨ intro" (0) ("∨ intro(R)"[B,A\3,4]) (hyp[A\4])) (cut[B,C\0,0]) ("¬ elim"[B\2]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0]) (cut[B,C\2,0]) (LAYOUT "∨ intro" (0) ("∨ intro(L)"[B,A\4,3]) (hyp[A\3])) (cut[B,C\0,0]) ("¬ elim"[B\2]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
+CONJECTUREPANEL Theorems
+PROOF "P ⊢ ¬¬P"
+INFER P 
+     ⊢ ¬¬P 
+FORMULAE
+0 ⊥,
+1 ¬P,
+2 P 
+IS
+SEQ ("¬ intro"[A\1]) (cut[B,C\0,0]) ("¬ elim"[B\2]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
+CONJECTUREPANEL Practice
+PROOF "A∧B, A∧B→C ⊢ C"
+INFER A∧B,
+     A∧B→C 
+     ⊢ C 
+FORMULAE
+0 C,
+1 A∧B,
+2 A∧B→C 
+IS
+SEQ (cut[B,C\0,0]) ("→ elim"[A,B\1,0]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
+CONJECTUREPANEL Practice
+CURRENTPROOF "A, B, C, A∧B∧C, A∧B∧C→D ⊢ D"
+INFER A,
+     B,
+     C,
+     A∧B∧C,
+     A∧B∧C→D 
+     ⊢ D 
+FORMULAE
+0 D,
+1 A∧B∧C,
+2 A∧B∧C→D,
+3 C,
+4 A∧B,
+5 B,
+6 A 
+IS
+SEQ (cut[B,C\4,0]) ("∧ intro"[A,B\6,5]) (hyp[A\6]) (hyp[A\5]) (cut[B,C\1,0]) ("∧ intro"[A,B\4,3]) (hyp[A\4]) (hyp[A\3]) (cut[B,C\0,0]) ("→ elim"[A,B\1,0]) (hyp[A\2]) (hyp[A\1]) (hyp[A\0])
+END
