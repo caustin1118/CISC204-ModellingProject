@@ -4,6 +4,9 @@ import people
 import movies
 import pprint
 
+# CONSTANTS
+group_size = 3
+
 # Encoding that will store all of your constraints
 E = Encoding()
 
@@ -149,10 +152,51 @@ class EnoughTimeProposition:
 
 enoughTime = EnoughTimeProposition("Enough Time to Watch")
 
+
+# Proposition to determine if the movie is suitable for a single person
+@proposition(E)
+class suitableMovieProposition:
+    def __init__(self, suitable):
+        self.suitable = suitable
+
+    def __repr__(self):
+        return f"suitableMovie: {self.suitable}"
+
+
+suitableMovie = suitableMovieProposition("This is a suitable movie to watch")
+
+age = 12
+time = 2
+genre = "action"
+
+if age < 13:
+    L13 = True
+if time == 2:
+    A1h = True
+if genre == "action":
+    likesAction = True
+
+rating = "pg13"
+time = 60
+genre = "action"
+if rating == "pg13":
+    Rated_PG13 = True
+if (time/60) >= 1:
+    MA1h = True
+if genre == "action":
+    isAction = True
+
+
+
+
+
 # CONSTRAINTS
 # Determining age range
 E.add_constraint(L13 >> L17)
 E.add_constraint(A17 >> A13)
+
+E.add_constraint(Rated_R >> (Rated_PG13 & Rated_G))
+E.add_constraint(Rated_PG13 >> (Rated_G & ~Rated_R))
 # Not Appropriate
 E.add_constraint(L13 & Rated_R >> ~AgeAppropriate)
 E.add_constraint(L13 & Rated_PG13 >> ~AgeAppropriate)
@@ -200,17 +244,31 @@ E.add_constraint(A2h & MA2h >> enoughTime)
 E.add_constraint(A2h & MA1h >> enoughTime)
 
 
-def example_theory():
-    T = E.compile()
-    return T
+E.add_constraint(likeable & AgeAppropriate & enoughTime >> suitableMovie)
+
+
+def basic_model():
+    basic_result = E.compile()
+    return basic_result
+
+
+def five_profile_model():
+    five_profile_result = E.compile()
+    return five_profile_result
+
+
+def expanded_model():
+    expanded_result = E.compile()
+    return expanded_result
 
 
 if __name__ == "__main__":
-    T = example_theory()
+    result = basic_model()
+    result
 
-    print("\nSatisfiable: %s" % T.satisfiable())
-    print("# Solutions: %d" % count_solutions(T))
+    print("\nSatisfiable: %s" % result.satisfiable())
+    print("# Solutions: %d" % count_solutions(result))
     print()
     # print("   Solution: %s" % T.solve())
 
-    sol = T.solve()
+    sol = result.solve()
